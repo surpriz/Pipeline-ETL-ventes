@@ -1,0 +1,46 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Airflow logs and temp files
+airflow/logs/
+.airflow/
+*.log
+
+# Environment & configuration files
+*.ini
+.env
+.venv/
+env/
+venv/
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+*.iws
+.DS_Store
+
+# Data files (selon vos besoins)
+data/processed/*
+data/warehouse/*
+# data/raw/*  # Décommentez si vous ne voulez pas versionner les données brutes
+
+# Jupyter Notebook
+.ipynb_checkpoints
+notebooks/.ipynb_checkpoints/
+
+# Documentation générée
+*.doc
+structure de répertoires.png
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Tests et coverage
+.coverage
+htmlcov/
+.pytest_cache/
