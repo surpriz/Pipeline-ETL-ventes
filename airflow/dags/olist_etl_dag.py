@@ -189,6 +189,16 @@ with DAG(
             products_df = pd.read_json(io.StringIO(transformed_data['products_df']), convert_dates=True)
             orders_df = pd.read_json(io.StringIO(transformed_data['orders_df']), convert_dates=True)
             
+            # Ajout de logs pour vérifier les données avant chargement
+            logger.info(f"Taille du DataFrame geography avant chargement: {len(geography_df)}")
+            logger.info(f"Taille du DataFrame customers avant chargement: {len(customers_df)}")
+            logger.info(f"Taille du DataFrame products avant chargement: {len(products_df)}")
+            logger.info(f"Taille du DataFrame orders avant chargement: {len(orders_df)}")
+            
+            # Vérifier que les DataFrames ne sont pas vides
+            if len(geography_df) == 0 or len(customers_df) == 0 or len(products_df) == 0 or len(orders_df) == 0:
+                raise ValueError("Un ou plusieurs DataFrames sont vides avant le chargement")
+
             # Vérifier et convertir les colonnes de dates en datetime si nécessaire
             date_columns = ['purchase_timestamp', 'approved_at', 'delivered_carrier_date', 
                             'delivered_customer_date', 'estimated_delivery_date']
@@ -196,23 +206,79 @@ with DAG(
                 if col in orders_df.columns:
                     orders_df[col] = pd.to_datetime(orders_df[col], errors='coerce')
 
-            # Chargement
+            # Chargement avec vérification après chaque étape
+            logger.info("Début chargement geography...")
             loader.load_geography(geography_df)
+            logger.info("Chargement geography terminé")
+            
+            logger.info("Début chargement customers...")
             loader.load_customers(customers_df)
+            logger.info("Chargement customers terminé")
+            
+            logger.info("Début chargement products...")
             loader.load_products(products_df)
+            logger.info("Chargement products terminé")
+            
+            logger.info("Début chargement orders...")
             loader.load_orders(orders_df)
-            logger.info("Chargement des données terminé.")
+            logger.info("Chargement orders terminé")
+            
+            logger.info("Chargement des données terminé avec succès.")
+            
         except Exception as e:
             logger.error(f"Erreur lors du chargement des données: {str(e)}")
             raise
         finally:
+            logger.info("Déconnexion de la base de données")
             loader.disconnect()
+
+    @task()
+    def verification():
+        """Vérifie que les données ont bien été chargées"""
+        try:
+            hook = PostgresHook(postgres_conn_id="postgres_default")
+            with hook.get_conn() as conn:
+                with conn.cursor() as cur:
+                    # Vérification des comptages
+                    tables = ['dim_geography', 'dim_customers', 'dim_products', 'fact_orders']
+                    for table in tables:
+                        cur.execute(f"SELECT COUNT(*) FROM {table}")
+                        count = cur.fetchone()[0]
+                        logger.info(f"Nombre d'enregistrements dans {table}: {count}")
+                    
+                    # Vérification des derniers enregistrements
+                    for table in tables:
+                        cur.execute(f"SELECT * FROM {table} LIMIT 1")
+                        sample = cur.fetchone()
+                        logger.info(f"Exemple d'enregistrement dans {table}: {sample}")
+                        
+            return "Vérification terminée"
+        except Exception as e:
+            logger.error(f"Erreur lors de la vérification: {str(e)}")
+            raise
+
+    @task()
+    def analyze_tables():
+        """Analyse les tables pour mettre à jour les statistiques"""
+        try:
+            hook = PostgresHook(postgres_conn_id="postgres_default")
+            with hook.get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute("ANALYZE VERBOSE;")
+            return "Analyse des tables terminée"
+        except Exception as e:
+            logger.error(f"Erreur lors de l'analyse des tables: {str(e)}")
+            raise
 
     # Définir l'ordre des tâches
     create_tables_task = create_tables()
     extraction_task = extraction()
     transformation_task = transformation(extraction_task)
     chargement_task = chargement(transformation_task)
+    analyze_task = analyze_tables()
+    verification_task = verification()
 
     # Définir les dépendances
-    create_tables_task >> extraction_task >> transformation_task >> chargement_task
+    #create_tables_task >> extraction_task >> transformation_task >> chargement_task
+    create_tables_task >> extraction_task >> transformation_task >> chargement_task >> analyze_task >> verification_task
+
