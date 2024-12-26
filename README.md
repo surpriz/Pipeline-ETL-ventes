@@ -1,102 +1,93 @@
-
 # Système d'analyse des ventes d'e-commerce
 
-Contexte :
-Imaginez que vous êtes Data Engineer pour une entreprise d'e-commerce qui souhaite mettre en place un système d'analyse de ses ventes. Vous devez créer un pipeline de données complet.
-Données sources (disponibles sur Kaggle) :
+## 📋 Contexte
+Data Engineer pour une entreprise d'e-commerce, vous devez mettre en place un système d'analyse complet des ventes via un pipeline de données.
 
-"Brazilian E-Commerce Public Dataset by Olist"
-(Il contient plusieurs fichiers CSV avec des données sur les commandes, produits, clients, vendeurs, etc.)
+## 📊 Données sources
+"Brazilian E-Commerce Public Dataset by Olist" (Kaggle)
+* Plusieurs fichiers CSV contenant des données sur :
+  * Commandes
+  * Produits
+  * Clients
+  * Vendeurs
 
-Objectifs du projet :
+## 🎯 Objectifs du projet
+* Créer un pipeline ETL complet
+* Mettre en place un data warehouse
+* Préparer les données pour l'analyse
 
-Créer un pipeline ETL complet
-Mettre en place un data warehouse
-Préparer les données pour l'analyse
+## 🛠 Étapes du projet
 
-Étapes suggérées :
+### 1. Ingestion des données
+* Création de scripts Python pour la lecture des fichiers CSV
+* Mise en place d'une validation basique des données
+* Simulation d'un système d'ingestion incrémentale
 
-Ingestion des données
+### 2. Stockage
+* Création d'une base de données PostgreSQL locale
+* Définition du schéma du data warehouse (modèle en étoile)
+* Implémentation des tables dimensions et faits
 
-Créer des scripts Python pour lire les fichiers CSV
-Mettre en place une validation basique des données
-Simuler un système d'ingestion incrémentale
+### 3. Transformation
+* Nettoyage des données
+  * Gestion des valeurs manquantes
+  * Élimination des doublons
+* Création des transformations métier
+  * Calcul du chiffre d'affaires journalier
+* Enrichissement des données
+  * Ajout de catégories temporelles
 
+### 4. Pipeline et Orchestration
+* Utilisation d'Apache Airflow
+  * Création de DAGs
+  * Automatisation des processus
+* Implémentation des contrôles qualité
 
-Stockage
+### 5. Accès aux données
+* Création de vues SQL optimisées
+* Mise en place d'agrégations précalculées
+* Préparation de requêtes types pour l'analyse
 
-Créer une base de données PostgreSQL locale
-Définir le schéma du data warehouse (modèle en étoile)
-Implémenter les tables dimensions et faits
+## 📐 Modélisation
 
+### Structure du Data Warehouse
+* **Table de faits** : `orders_fact`
+* **Tables de dimensions** :
+  * `customers_dim`
+  * `products_dim`
+  * `sellers_dim`
+  * `time_dim`
 
-Transformation
+### Métriques principales
+* Chiffre d'affaires quotidien/mensuel
+* Nombre de commandes par région
+* Performance des vendeurs
+* Délais de livraison moyens
 
-Nettoyer les données (valeurs manquantes, doublons)
-Créer des transformations métier (ex: calcul du chiffre d'affaires par jour)
-Enrichir les données (ex: ajout de catégories temporelles)
+## 💻 Stack technique
+* **Python**
+  * pandas
+  * SQLAlchemy
+* **PostgreSQL**
+* **Apache Airflow**
+* **Git**
 
+## ⭐ Bonus
+* Tests unitaires
+* Système de logging
+* Tableaux de bord (Metabase ou Preset)
+* Conteneurisation Docker
 
-Pipeline et Orchestration
+## 📦 Livrables
+1. Scripts Python ETL
+2. Schéma de base de données
+3. DAGs Airflow
+4. Documentation technique
+5. Tests unitaires
+6. Procédures de déploiement
 
-Utiliser Apache Airflow pour orchestrer le pipeline
-Créer des DAGs pour automatiser les processus
-Implémenter des contrôles de qualité
-
-
-Accès aux données
-
-Créer des vues SQL optimisées
-Mettre en place des agrégations précalculées
-Préparer des requêtes types pour l'analyse
-
-
-
-Objectifs techniques à atteindre :
-
-Modélisation :
-
-Table de faits : orders_fact
-Tables de dimensions : customers_dim, products_dim, sellers_dim, time_dim
-
-
-Métriques à calculer :
-
-Chiffre d'affaires quotidien/mensuel
-Nombre de commandes par région
-Performance des vendeurs
-Délais de livraison moyens
-
-
-Technologies suggérées :
-
-Python (pandas, SQLAlchemy)
-PostgreSQL
-Apache Airflow
-Git pour le versioning
-
-
-
-Bonus (pour aller plus loin) :
-
-Ajouter des tests unitaires
-Implémenter un système de logging
-Créer des tableaux de bord avec Metabase ou Preset
-Conteneuriser l'application avec Docker
-
-Livrables attendus :
-
-Scripts Python pour l'ETL
-Schéma de base de données
-DAGs Airflow
-Documentation technique
-Tests unitaires
-Procédures de déploiement
-
-Ce projet vous permettra de :
-
-Pratiquer la modélisation de données
-Manipuler des données réelles
-Mettre en place une architecture data complète
-Utiliser des outils standards de l'industrie
-
+## 🎓 Compétences développées
+* Modélisation de données
+* Manipulation de données réelles
+* Architecture data complète
+* Utilisation d'outils standards de l'industrie
