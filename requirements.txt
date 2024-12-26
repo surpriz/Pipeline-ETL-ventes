@@ -1,0 +1,10 @@
+pandas
+sqlalchemy
+psycopg2-binary
+python-dotenv
+apache-airflow
+pytest
+jupyter
+pandas
+numpy
+apache-airflow-providers-postgres

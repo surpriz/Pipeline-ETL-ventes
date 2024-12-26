@@ -1,0 +1,71 @@
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: jerome_laval
+      POSTGRES_PASSWORD: Motdepasse13$
+      POSTGRES_DB: olist_dw
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  airflow-init:
+    image: apache/airflow:2.10.0
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://jerome_laval:Motdepasse13$@postgres:5432/olist_dw
+      AIRFLOW__CORE__FERNET_KEY: ''
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__WEBSERVER__SECRET_KEY: 'this_is_a_secret'
+      AIRFLOW_UID: '50000'
+      _AIRFLOW_DB_UPGRADE: 'true'
+      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_WWW_USER_USERNAME: admin
+      _AIRFLOW_WWW_USER_PASSWORD: admin
+    user: "0:0"
+    command: bash -c "airflow db upgrade && airflow users create --username admin --firstname Admin --lastname Admin --role Admin --email admin@example.com --password admin"
+
+  webserver:
+    image: apache/airflow:2.10.0
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://jerome_laval:Motdepasse13$@postgres:5432/olist_dw
+      AIRFLOW__CORE__FERNET_KEY: ''
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__WEBSERVER__SECRET_KEY: 'this_is_a_secret'
+      AIRFLOW_CONN_POSTGRES_DEFAULT: 'postgresql://jerome_laval:Motdepasse13$@postgres:5432/olist_dw'
+    depends_on:
+      - postgres
+      - airflow-init
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ../src:/opt/airflow/dags/src
+      - ../data:/opt/airflow/dags/data
+    command: webserver
+
+  scheduler:
+    image: apache/airflow:2.10.0
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://jerome_laval:Motdepasse13$@postgres:5432/olist_dw
+      AIRFLOW__CORE__FERNET_KEY: ''
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__WEBSERVER__SECRET_KEY: 'this_is_a_secret'
+    depends_on:
+      - postgres
+      - airflow-init
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ../src:/opt/airflow/dags/src
+      - ../data:/opt/airflow/dags/data
+    command: scheduler
+
+volumes:
+  postgres_data:
