@@ -3,13 +3,14 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import logging
-import sys  # Import manquant déjà ajouté
-import os   # Ajout de l'import manquant
-from config import EXPECTED_SCHEMAS
+import sys
+import os 
+from src.etl.config import EXPECTED_SCHEMAS
+
 
 # Ajout du chemin parent pour l'importation
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from src.etl.config import EXPECTED_SCHEMAS  # Modification de l'import
+#sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+#from src.etl.config import EXPECTED_SCHEMAS
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO)
@@ -75,30 +76,16 @@ class DataTransformer:
         """Transforme les données produits"""
         logger.info("Transformation des données produits...")
         try:
-            # Nettoyage des valeurs numériques
             numeric_cols = ['product_weight_g', 'product_length_cm', 
-                           'product_height_cm', 'product_width_cm', 
-                           'product_photos_qty']
-                           
-            # Ajout de logging pour débugger
+                        'product_height_cm', 'product_width_cm', 
+                        'product_photos_qty']
+                        
+            # Remplacer NaN par 0 pour les colonnes numériques
             for col in numeric_cols:
-                logger.info(f"Stats pour {col}:")
-                logger.info(f"Min: {df[col].min()}")
-                logger.info(f"Max: {df[col].max()}")
-                logger.info(f"Mean: {df[col].mean()}")
+                if col in df.columns:
+                    df[col] = df[col].fillna(0)
             
-            df = self.clean_numeric_values(df, numeric_cols)
-            
-            # Gestion des valeurs extrêmes
-            df['product_weight_g'] = df['product_weight_g'].clip(upper=32767)  # max pour smallint
-            df['product_length_cm'] = df['product_length_cm'].clip(upper=32767)
-            df['product_height_cm'] = df['product_height_cm'].clip(upper=32767)
-            df['product_width_cm'] = df['product_width_cm'].clip(upper=32767)
-            df['product_photos_qty'] = df['product_photos_qty'].clip(upper=32767)
-            
-            # Remplacement des NaN par None
-            df = df.replace({np.nan: None})
-            
+            # Valider et retourner
             return df
         except Exception as e:
             logger.error(f"Erreur lors de la transformation produits: {str(e)}")

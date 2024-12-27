@@ -14,9 +14,9 @@ from airflow.providers.postgres.hooks.postgres import PostgresHook
 # Ajouter le chemin des scripts ETL
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src', 'etl'))
 
-from extract import DataExtractor
-from transform import DataTransformer
-from load import DataLoader
+from src.etl.extract import DataExtractor
+from src.etl.transform import DataTransformer
+from src.etl.load import DataLoader
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO)

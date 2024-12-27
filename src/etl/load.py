@@ -4,7 +4,10 @@ import psycopg2
 import logging
 import os  # Ajout si nécessaire
 import sys  # Ajout si nécessaire
-from config import get_db_config
+from src.etl.config import get_db_config
+
+
+
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO)
