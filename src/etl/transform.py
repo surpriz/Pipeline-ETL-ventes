@@ -5,7 +5,11 @@ from datetime import datetime
 import logging
 import sys
 import os 
-from src.etl.config import EXPECTED_SCHEMAS
+
+# Ajout du chemin parent pour l'importation
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+from src.etl.config import RAW_DATA_DIR, EXPECTED_SCHEMAS
+import logging
 
 
 # Ajout du chemin parent pour l'importation

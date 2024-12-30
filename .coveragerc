@@ -1,0 +1,10 @@
+[run]
+omit =
+    src/etl/load_data.py
+    src/etl/load_dimensions.py
+    src/etl/load_facts.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:

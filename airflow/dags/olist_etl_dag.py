@@ -270,6 +270,25 @@ with DAG(
             logger.error(f"Erreur lors de l'analyse des tables: {str(e)}")
             raise
 
+    @task()
+    def refresh_views():
+        """Rafraîchit les vues matérialisées"""
+        try:
+            hook = PostgresHook(postgres_conn_id="postgres_default")
+            with hook.get_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute("""
+                        REFRESH MATERIALIZED VIEW monthly_revenue_extended;
+                        REFRESH MATERIALIZED VIEW delivery_performance;
+                        REFRESH MATERIALIZED VIEW seller_performance;
+                    """)
+            logger.info("Vues matérialisées rafraîchies avec succès")
+        except Exception as e:
+            logger.error(f"Erreur lors du rafraîchissement des vues: {str(e)}")
+            raise
+
+
+
     # Définir l'ordre des tâches
     create_tables_task = create_tables()
     extraction_task = extraction()
@@ -277,6 +296,7 @@ with DAG(
     chargement_task = chargement(transformation_task)
     analyze_task = analyze_tables()
     verification_task = verification()
+    #refresh_views_task = refresh_views()
 
     # Définir les dépendances
     #create_tables_task >> extraction_task >> transformation_task >> chargement_task
