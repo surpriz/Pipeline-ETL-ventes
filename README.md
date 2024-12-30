@@ -1,3 +1,5 @@
+![Dashboard E-commerce](dashboard_ecommerce.jpg)
+
 # Système d'analyse des ventes d'e-commerce
 
 ## 📋 Contexte
